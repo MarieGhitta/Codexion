@@ -15,10 +15,14 @@
 
 typedef struct s_coder {
 
-} t_codeur;
+} t_coder;
 
 typedef struct s_dongle {
 
-} t_dongle
+} t_dongle;
+
+typedef struct s_data {
+
+} t_data;
 
 #endif

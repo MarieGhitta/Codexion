@@ -10,4 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "codexion.h"
+#include <stdio.h>
 
+int main(int argc, char **argv){
+    if (argc != 9) {
+        printf("ERROR: must be 8 arguments\n");
+        return 1;
+    }
+    return 0
+}
