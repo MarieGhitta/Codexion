@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <sys/time.h>
+#include "codexion.h"
 
 int is_digit(char c){
     if (c >= 48 && c <= 57)
@@ -38,7 +39,7 @@ int parse_digit(int argc, char **argv)
         while (argv[i][j]){
             if (!is_digit(argv[i][j]))
             {
-                printf("ERROR: must be a digit.\n");
+                printf("ERROR: must be a positif digit.\n");
                 return 1;
             }
             j++;   
@@ -46,17 +47,27 @@ int parse_digit(int argc, char **argv)
         i++;
     }
     return 0;
-    /*if (atoi(number_of_coders) < 0)
+}
+
+int check_scheduler(char *argv)
+{
+    if (strcmp(argv, "fifo") != 0 && strcmp(argv, "edf"))
     {
-        printf("ERROR: number of coders must be a positive number.\n");
+        printf("ERROR: invalid scheduler format.\n");
         return 1;
     }
-    if (atoi(number_of_compiles_required) < 0)
-    {
-        printf("ERROR: number_of_compiles_required must be a positive number.\n");
-        return 1;
-    }
-    if (strcmp(scheduler, "fifo") != 0 && strcmp(scheduler, "edf") != 0) {
-        printf("ERROR: incorrect format for scheduler.\n");
-    }*/
+    return 0;
+}
+
+int fill_simulation(t_simulation *sim, char **argv)
+{
+    sim->number_of_coders = atoi(argv[1]);
+    sim->time_to_burnout = atoi(argv[2]);
+    sim->time_to_compile = atoi(argv[3]);
+    sim->time_to_debug = atoi(argv[4]);
+    sim->time_to_refactor = atoi(argv[5]);
+    sim->number_of_compiles_required = atoi(argv[6]);
+    sim->dongle_cooldown = atoi(argv[7]);
+    sim->scheduler = argv[8];
+    return 0;
 }

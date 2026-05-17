@@ -1,0 +1,2 @@
+- comment gérer overflow ? 
+- int/long dans struct ?
