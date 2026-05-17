@@ -13,14 +13,6 @@
 #ifndef CODEXION_H
 # define CODEXION_H
 
-typedef struct s_coder {
-
-} t_coder;
-
-typedef struct s_dongle {
-
-} t_dongle;
-
 typedef struct s_simulation {
     int number_of_coders;
     long time_to_burnout;
@@ -30,7 +22,24 @@ typedef struct s_simulation {
     int number_of_compiles_required;
     int dongle_cooldown;
     char *scheduler;
+    t_coder    *coders;
+    t_dongle    *dongles;
+    
 } t_simulation;
+
+typedef struct s_dongle {
+    pthread_mutex_t lock_dongle;
+} t_dongle;
+
+typedef struct s_coder {
+    int ID;
+    int number_of_compiles_done;
+    long    start_of_last_compile;
+    t_simulation *sim;
+    pthread_t    coder;
+    t_dongle    *left_dongle;
+    t_dongle    *right_dongle;
+} t_coder;
 
 int parse_digit(int argc, char **argv);
 int fill_simulation(t_simulation *sim, char **argv);

@@ -16,7 +16,7 @@
 #include <sys/time.h>
 #include "codexion.h"
 
-int is_digit(char c){
+static int is_digit(char c){
     if (c >= 48 && c <= 57)
         return 1;
     return 0;
@@ -51,7 +51,7 @@ int parse_digit(int argc, char **argv)
 
 int check_scheduler(char *argv)
 {
-    if (strcmp(argv, "fifo") != 0 && strcmp(argv, "edf"))
+    if (strcmp(argv, "fifo") != 0 && strcmp(argv, "edf") != 0)
     {
         printf("ERROR: invalid scheduler format.\n");
         return 1;

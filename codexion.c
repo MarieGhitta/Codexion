@@ -25,6 +25,8 @@ int main(int argc, char **argv){
         return 1;
     t_simulation *sim;
     sim = malloc(sizeof(t_simulation));
+    if (!sim)
+        return NULL;
     fill_simulation(sim, argv);
     printf("Nb codeurs: %d\n", sim->number_of_coders);
     printf("Time burnout: %ld\n", sim->time_to_burnout);
