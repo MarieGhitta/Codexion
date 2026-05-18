@@ -11,6 +11,9 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <pthread.h>
+#include <time.h>
+#include <stdlib.h>
 
 static int fill_coders_and_dongles(t_simulation *sim)
 {
@@ -50,11 +53,33 @@ static int init_dongles(t_simulation *sim)
     return 0;
 }
 
+static int init_coders(t_simulation *sim)
+{
+    int         i;
+    t_dongle    left_dongle;
+    t_dongle    right_dongle;
+    //long        timestamp;
+
+    i = 0;
+    while(i < sim->number_of_coders)
+    {
+        left_dongle = sim->coders[i].left_dongle[i % sim->number_of_coders];
+        right_dongle = sim->coders[i].right_dongle[(i + 1) % sim->number_of_coders];
+        sim->coders[i].ID = i;
+        sim->coders[i].number_of_compiles_done = 0;
+        sim->coders[i].start_of_last_compile = 0;
+        sim->coders[i].start_of_last_compile = 0;
+        i++;
+    }
+    return 0;
+}
+
 int init_simulation(t_simulation *sim)
 {
     if (fill_coders_and_dongles(sim) == 1)
         return 1;
     if (init_dongles(sim) == 1)
         return 1;
+    init_coders(sim);
     return 0;
 }

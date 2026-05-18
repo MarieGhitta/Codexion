@@ -12,6 +12,21 @@
 
 #ifndef CODEXION_H
 # define CODEXION_H
+#include <pthread.h>
+
+typedef struct s_dongle {
+    pthread_mutex_t lock_dongle;
+} t_dongle;
+
+typedef struct s_coder {
+    int ID;
+    int number_of_compiles_done;
+    long    start_of_last_compile;
+    //t_simulation *sim;
+    pthread_t    coder;
+    t_dongle    *left_dongle;
+    t_dongle    *right_dongle;
+} t_coder;
 
 typedef struct s_simulation {
     int number_of_coders;
@@ -27,22 +42,10 @@ typedef struct s_simulation {
     
 } t_simulation;
 
-typedef struct s_dongle {
-    pthread_mutex_t lock_dongle;
-} t_dongle;
-
-typedef struct s_coder {
-    int ID;
-    int number_of_compiles_done;
-    long    start_of_last_compile;
-    t_simulation *sim;
-    pthread_t    coder;
-    t_dongle    *left_dongle;
-    t_dongle    *right_dongle;
-} t_coder;
 
 int parse_digit(int argc, char **argv);
 int fill_simulation(t_simulation *sim, char **argv);
 int check_scheduler(char *argv);
+int init_simulation(t_simulation *sim);
 
 #endif

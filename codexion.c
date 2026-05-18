@@ -26,16 +26,19 @@ int main(int argc, char **argv){
     t_simulation *sim;
     sim = malloc(sizeof(t_simulation));
     if (!sim)
-        return NULL;
+        return 1;
     fill_simulation(sim, argv);
-    printf("Nb codeurs: %d\n", sim->number_of_coders);
-    printf("Time burnout: %ld\n", sim->time_to_burnout);
-    printf("Time compile: %ld\n", sim->time_to_compile);
-    printf("Time debug: %ld\n", sim->time_to_debug);
-    printf("Time refactor: %ld\n", sim->time_to_refactor);
-    printf("Nb compiles: %d\n", sim->number_of_compiles_required);
-    printf("Dongle cooldown: %d\n", sim->dongle_cooldown);
-    printf("Scheduler: %s\n", sim->scheduler);
+    init_simulation(sim);
+    //test fill-in
+    int i;
+
+    i = 0;
+    while (i < sim->number_of_coders)
+    {
+        printf("coders ID: %d\n", sim->coders[i].ID);
+        
+        i++;
+    }
     free(sim);
     return 0;
 }
