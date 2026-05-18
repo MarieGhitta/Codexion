@@ -34,8 +34,13 @@ int parse_digit(int argc, char **argv)
             printf("ERROR: empty string.\n");
             return 1;
         }
-        if (argv[i][0] == '+' && argv[i][1])
+        if (argv[i][0] == '+')
             j++;
+        if (!argv[i][j])
+        {
+                printf("ERROR: invalid format, must be a positif digit.\n");
+                return 1;
+        }
         while (argv[i][j]){
             if (!is_digit(argv[i][j]))
             {

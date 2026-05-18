@@ -12,7 +12,6 @@
 
 #include "codexion.h"
 #include <pthread.h>
-#include <time.h>
 #include <stdlib.h>
 
 static int fill_coders_and_dongles(t_simulation *sim)
@@ -39,15 +38,8 @@ static int init_dongles(t_simulation *sim)
     {
         lock_dongle_init = pthread_mutex_init(&sim->dongles[i].lock_dongle, NULL);
         if (lock_dongle_init != 0)
-        {
-            i--;
-            while(i >= 0)
-            {
-                pthread_mutex_destroy(&sim->dongles[i].lock_dongle);
-                i--;
-            }
             return 1;
-        }
+        sim->count_mutex += 1;
         i++;
     }
     return 0;
@@ -56,19 +48,15 @@ static int init_dongles(t_simulation *sim)
 static int init_coders(t_simulation *sim)
 {
     int         i;
-    t_dongle    left_dongle;
-    t_dongle    right_dongle;
-    //long        timestamp;
 
     i = 0;
     while(i < sim->number_of_coders)
     {
-        left_dongle = sim->coders[i].left_dongle[i % sim->number_of_coders];
-        right_dongle = sim->coders[i].right_dongle[(i + 1) % sim->number_of_coders];
-        sim->coders[i].ID = i;
+        sim->coders[i].ID = i + 1;
         sim->coders[i].number_of_compiles_done = 0;
         sim->coders[i].start_of_last_compile = 0;
-        sim->coders[i].start_of_last_compile = 0;
+        sim->coders[i].left_dongle = &sim->dongles[i % sim->number_of_coders];
+        sim->coders[i].right_dongle = &sim->dongles[(i + 1) % sim->number_of_coders];
         i++;
     }
     return 0;
