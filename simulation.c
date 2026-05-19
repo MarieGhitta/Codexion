@@ -64,10 +64,16 @@ static int init_coders(t_simulation *sim)
 
 int init_simulation(t_simulation *sim)
 {
+    int mutex_writing;
+
     if (fill_coders_and_dongles(sim) == 1)
         return 1;
     if (init_dongles(sim) == 1)
         return 1;
     init_coders(sim);
+    mutex_writing = pthread_mutex_init(&sim->writing, NULL);
+    if (mutex_writing != 0)
+        return 1;
+    sim->is_mut_writing = 1;
     return 0;
 }

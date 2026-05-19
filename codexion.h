@@ -40,6 +40,9 @@ struct s_simulation {
     int dongle_cooldown;
     int count_mutex;
     char *scheduler;
+    long    time_start_simulation;
+    pthread_mutex_t writing;
+    int is_mut_writing;
     t_coder    *coders;
     t_dongle    *dongles;
     

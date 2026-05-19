@@ -21,6 +21,8 @@ void destroy_simulation(t_simulation *sim)
     i = 0;
     if (sim)
     {
+        if (sim->is_mut_writing)
+            pthread_mutex_destroy(&sim->writing);
         while (i < sim->count_mutex)
         {
             pthread_mutex_destroy(&sim->dongles[i].lock_dongle);

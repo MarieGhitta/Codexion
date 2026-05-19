@@ -16,7 +16,8 @@
 #include <sys/time.h>
 #include "codexion.h"
 
-static int is_digit(char c){
+static int is_digit(char c)
+{
     if (c >= 48 && c <= 57)
         return 1;
     return 0;
@@ -28,25 +29,19 @@ int parse_digit(int argc, char **argv)
     int j;
 
     i = 1;
-    while (i < argc - 1){
+    while (i < argc - 1)
+    {
         j = 0;
-        if (!argv[i][j]){
-            printf("ERROR: empty string.\n");
-            return 1;
-        }
+        if (!argv[i][j])
+            return (printf("ERROR: empty string.\n"), 1);
         if (argv[i][0] == '+')
             j++;
         if (!argv[i][j])
+            return (printf("ERROR: invalid format, must be a positif digit.\n"),1);
+        while (argv[i][j])
         {
-                printf("ERROR: invalid format, must be a positif digit.\n");
-                return 1;
-        }
-        while (argv[i][j]){
             if (!is_digit(argv[i][j]))
-            {
-                printf("ERROR: must be a positif digit.\n");
-                return 1;
-            }
+                return (printf("ERROR: must be a positif digit.\n"), 1);
             j++;   
         }
         i++;
