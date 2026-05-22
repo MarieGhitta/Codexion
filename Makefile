@@ -4,7 +4,7 @@ CC = cc
 
 CFLAGS = -Wall -Wextra -Werror -pthread
 
-SRC = codexion.c parsing.c simulation.c time.c logging.c
+SRC = codexion.c parsing.c simulation.c time.c logging.c routine.c threads.c
 
 OBJ = $(SRC:.c=.o)
 

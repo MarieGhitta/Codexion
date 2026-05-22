@@ -57,6 +57,7 @@ static int init_coders(t_simulation *sim)
         sim->coders[i].start_of_last_compile = 0;
         sim->coders[i].left_dongle = &sim->dongles[i % sim->number_of_coders];
         sim->coders[i].right_dongle = &sim->dongles[(i + 1) % sim->number_of_coders];
+        sim->coders[i].sim = sim;
         i++;
     }
     return 0;

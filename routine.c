@@ -1,21 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   codexion.c                                         :+:      :+:    :+:   */
+/*   codexion.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mghitta <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/15 15:00:35 by mghitta           #+#    #+#             */
-/*   Updated: 2026/05/15 15:00:37 by mghitta          ###   ########.fr       */
+/*   Created: 2026/05/15 15:00:27 by mghitta           #+#    #+#             */
+/*   Updated: 2026/05/15 15:00:29 by mghitta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include "codexion.h"
+#include <unistd.h>
 
-void log_status(t_simulation *sim, t_coder *coder, char *message)
+void *coder_routine(void *arg)
 {
-    pthread_mutex_lock(&sim->writing);
-    printf("%ld %d %s\n", get_simulation_time(sim), coder->ID, message);
-    pthread_mutex_unlock(&sim->writing);
+    t_coder *coder;
+    
+    coder = (t_coder*)arg;
+    while (1)
+    {
+        log_status(coder->sim, coder, "is compiling");
+        sleep(1);
+        log_status(coder->sim, coder, "is debugging");
+        sleep(2);
+    }
+    return NULL;
 }

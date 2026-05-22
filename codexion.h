@@ -25,7 +25,7 @@ typedef struct s_coder {
     int number_of_compiles_done;
     long    start_of_last_compile;
     t_simulation *sim;
-    pthread_t    coder;
+    pthread_t    coder_thread;
     t_dongle    *left_dongle;
     t_dongle    *right_dongle;
 } t_coder;
@@ -46,12 +46,17 @@ struct s_simulation {
     t_coder    *coders;
     t_dongle    *dongles;
     
-} t_simulation;
+};
 
 
 int parse_digit(int argc, char **argv);
 int fill_simulation(t_simulation *sim, char **argv);
 int check_scheduler(char *argv);
 int init_simulation(t_simulation *sim);
+long get_simulation_time(t_simulation *sim);
+int create_threads(t_simulation *sim);
+int join_threads(t_simulation *sim);
+void *coder_routine(void *arg);
+void log_status(t_simulation *sim, t_coder *coder, char *message);
 
 #endif
