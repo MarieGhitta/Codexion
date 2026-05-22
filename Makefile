@@ -1,4 +1,4 @@
-NAME = codexion
+NAME = codexion.a
 
 CC = cc
 

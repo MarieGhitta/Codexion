@@ -1,34 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   routine.c                                         :+:      :+:    :+:   */
+/*   simulation_utils.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mghitta <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/15 15:00:27 by mghitta           #+#    #+#             */
-/*   Updated: 2026/05/15 15:00:29 by mghitta          ###   ########.fr       */
+/*   Created: 2026/05/15 15:02:29 by mghitta           #+#    #+#             */
+/*   Updated: 2026/05/15 15:02:31 by mghitta          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <unistd.h>
 
-void take_dongle(t_simualtion *sim)
+int get_stop(t_simulation *sim)
 {
-    
+    int value_stop;
+
+    pthread_mutex_lock(&sim->stop_sim_mutex);
+    value_stop = sim->stop_sim;
+    pthread_mutex_unlock(&sim->stop_sim_mutex);
+    return value_stop;
 }
 
-void *coder_routine(void *arg)
+int set_stop(t_simulation *sim)
 {
-    t_coder *coder;
-    
-    coder = (t_coder*)arg;
-    while (!get_stop(coder->sim))
-    {
-        log_status(coder->sim, coder, "is compiling");
-        sleep(1);
-        log_status(coder->sim, coder, "is debugging");
-        sleep(2);
-    }
-    return NULL;
+    pthread_mutex_lock(&sim->stop_sim_mutex);
+    sim->stop_sim = 1;
+    pthread_mutex_unlock(&sim->stop_sim_mutex);
 }

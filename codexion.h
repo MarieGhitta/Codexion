@@ -42,7 +42,10 @@ struct s_simulation {
     char *scheduler;
     long    time_start_simulation;
     pthread_mutex_t writing;
+    pthread_mutex_t stop_sim_mutex;
     int is_mut_writing;
+    int stop_sim;
+    int is_mut_stop_sim;
     t_coder    *coders;
     t_dongle    *dongles;
     

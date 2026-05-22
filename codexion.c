@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 void destroy_simulation(t_simulation *sim)
 {
@@ -24,6 +25,8 @@ void destroy_simulation(t_simulation *sim)
     {
         if (sim->is_mut_writing)
             pthread_mutex_destroy(&sim->writing);
+        if (sim->is_mut_stop_sim)
+            pthread_mutex_destroy(&sim->stop_sim_mutex);
         while (i < sim->count_mutex)
         {
             pthread_mutex_destroy(&sim->dongles[i].lock_dongle);
@@ -53,8 +56,10 @@ int main(int argc, char **argv){
     memset(sim, 0, sizeof(t_simulation));
     fill_simulation(sim, argv);
     init_simulation(sim);
-    sim->time_start_simulation = get_simulation_time(sim);
+    sim->time_start_simulation = get_current_time_ms();
     create_threads(sim);
+    sleep(5);
+    set_stop(sim);
     join_threads(sim);
     destroy_simulation(sim);
     return 0;

@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing.c                                          :+:      :+:    :+:   */
+/*   simulation.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mghitta <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -66,6 +66,7 @@ static int init_coders(t_simulation *sim)
 int init_simulation(t_simulation *sim)
 {
     int mutex_writing;
+    int mutex_stop_sim;
 
     if (fill_coders_and_dongles(sim) == 1)
         return 1;
@@ -76,5 +77,9 @@ int init_simulation(t_simulation *sim)
     if (mutex_writing != 0)
         return 1;
     sim->is_mut_writing = 1;
+    mutex_stop_sim = pthread_mutex_init(&sim->stop_sim_mutex, NULL);
+    if (mutex_stop_sim  != 0)
+        return 1;
+    sim->is_mut_stop_sim = 1;
     return 0;
 }
