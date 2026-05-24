@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   time.c                                             :+:      :+:    :+:   */
+/*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mghitta <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -11,24 +11,27 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <sys/time.h>
+#include <unistd.h>
 
-static long get_current_time_ms()
+void monitor(t_simulation *sim)
 {
-    struct timeval debut;
-    long    timestamp;
-
-    gettimeofday(&debut, NULL);
-    timestamp = (debut.tv_sec * 1000) + (debut.tv_usec / 1000);
-    return timestamp;
-}
-
-long get_simulation_time(t_simulation *sim)
-{
-    long    current_time;
-    long    simulation_time;
-
-    current_time = get_current_time_ms();
-    simulation_time = current_time - sim->time_start_simulation;
-    return simulation_time;
+    int i;
+    long    time_since_last_compile;
+    
+    while (get_stop(sim) == 0)
+    {
+            i = 0;
+        while (i < sim->number_of_coders)
+        {
+            time_since_last_compile = get_simulation_time(sim) - get_start(&sim->coders[i]);
+            if (time_since_last_compile >= sim->time_to_burnout)
+            {
+                log_status(sim, &sim->coders[i], "burned out");
+                set_stop(sim);
+                break;
+            }
+            i++;
+        }
+        usleep(1000);
+    }
 }

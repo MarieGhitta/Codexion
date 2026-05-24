@@ -30,6 +30,7 @@ void destroy_simulation(t_simulation *sim)
         while (i < sim->count_mutex)
         {
             pthread_mutex_destroy(&sim->dongles[i].lock_dongle);
+            pthread_mutex_destroy(&sim->coders[i].safe_start_of_last_compile);
             i++;
         }
         if (sim->dongles)

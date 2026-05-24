@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   simulation.c                                          :+:      :+:    :+:   */
+/*   simulation.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mghitta <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -48,6 +48,7 @@ static int init_dongles(t_simulation *sim)
 static int init_coders(t_simulation *sim)
 {
     int         i;
+    int        start_compile_init;
 
     i = 0;
     while(i < sim->number_of_coders)
@@ -58,6 +59,9 @@ static int init_coders(t_simulation *sim)
         sim->coders[i].left_dongle = &sim->dongles[i % sim->number_of_coders];
         sim->coders[i].right_dongle = &sim->dongles[(i + 1) % sim->number_of_coders];
         sim->coders[i].sim = sim;
+        start_compile_init = pthread_mutex_init(&sim->coders[i].safe_start_of_last_compile, NULL);
+        if (start_compile_init != 0)
+            return 1;
         i++;
     }
     return 0;

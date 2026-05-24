@@ -24,6 +24,7 @@ typedef struct s_coder {
     int ID;
     int number_of_compiles_done;
     long    start_of_last_compile;
+    pthread_mutex_t safe_start_of_last_compile;
     t_simulation *sim;
     pthread_t    coder_thread;
     t_dongle    *left_dongle;
