@@ -1,10 +1,10 @@
-NAME = codexion.a
+NAME = codexion
 
 CC = cc
 
 CFLAGS = -Wall -Wextra -Werror -pthread
 
-SRC = codexion.c parsing.c simulation.c time.c logging.c routine.c threads.c
+SRC = codexion.c parsing.c simulation.c time.c logging.c routine.c threads.c monitor.c simulation_utils.c
 
 OBJ = $(SRC:.c=.o)
 

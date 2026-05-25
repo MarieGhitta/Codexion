@@ -44,6 +44,7 @@ struct s_simulation {
     long    time_start_simulation;
     pthread_mutex_t writing;
     pthread_mutex_t stop_sim_mutex;
+    pthread_t   monitor_thread;
     int is_mut_writing;
     int stop_sim;
     int is_mut_stop_sim;
@@ -57,10 +58,17 @@ int parse_digit(int argc, char **argv);
 int fill_simulation(t_simulation *sim, char **argv);
 int check_scheduler(char *argv);
 int init_simulation(t_simulation *sim);
+long get_current_time_ms();
 long get_simulation_time(t_simulation *sim);
 int create_threads(t_simulation *sim);
 int join_threads(t_simulation *sim);
 void *coder_routine(void *arg);
 void log_status(t_simulation *sim, t_coder *coder, char *message);
+void *monitor(void *arg);
+int get_stop(t_simulation *sim);
+void set_stop(t_simulation *sim);
+long get_start(t_coder *coder);
+void set_start(t_coder *coder);
+void smart_sleep(t_simulation *sim, long time_to_wait);
 
 #endif

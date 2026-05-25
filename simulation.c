@@ -47,8 +47,8 @@ static int init_dongles(t_simulation *sim)
 
 static int init_coders(t_simulation *sim)
 {
-    int         i;
-    int        start_compile_init;
+    int i;
+    int start_compile_init;       
 
     i = 0;
     while(i < sim->number_of_coders)
@@ -76,7 +76,8 @@ int init_simulation(t_simulation *sim)
         return 1;
     if (init_dongles(sim) == 1)
         return 1;
-    init_coders(sim);
+    if (init_coders(sim) == 1)
+        return 1;
     mutex_writing = pthread_mutex_init(&sim->writing, NULL);
     if (mutex_writing != 0)
         return 1;

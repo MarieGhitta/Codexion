@@ -13,11 +13,13 @@
 #include "codexion.h"
 #include <unistd.h>
 
-void monitor(t_simulation *sim)
+void *monitor(void *arg)
 {
     int i;
     long    time_since_last_compile;
+    t_simulation *sim;
     
+    sim = (t_simulation*)arg;
     while (get_stop(sim) == 0)
     {
             i = 0;
@@ -34,4 +36,5 @@ void monitor(t_simulation *sim)
         }
         usleep(1000);
     }
+    return NULL;
 }

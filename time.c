@@ -12,8 +12,9 @@
 
 #include "codexion.h"
 #include <sys/time.h>
+#include <unistd.h>
 
-static long get_current_time_ms()
+long get_current_time_ms()
 {
     struct timeval debut;
     long    timestamp;
@@ -31,4 +32,18 @@ long get_simulation_time(t_simulation *sim)
     current_time = get_current_time_ms();
     simulation_time = current_time - sim->time_start_simulation;
     return simulation_time;
+}
+
+void smart_sleep(t_simulation *sim, long time_to_wait)
+{
+    long time_start;
+    long current_time;
+    
+    time_start = get_simulation_time(sim);
+    current_time = time_start;
+    while(!get_stop(sim) && (current_time - time_start) <= time_to_wait)
+    {
+        usleep(1000);
+        current_time = get_simulation_time(sim);
+    }
 }

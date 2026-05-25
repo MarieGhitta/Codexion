@@ -13,31 +13,83 @@
 #include "codexion.h"
 #include <unistd.h>
 
-void take_dongle(t_coder *coder)
+static void set_dongles_order(t_coder *coder, t_dongle **premier, t_dongle **second)
 {
-    t_dongle *premier;
-    t_dongle *second;
-
     if (coder->ID % 2 != 0)
     {
-        premier = coder->left_dongle;
-        second = coder->right_dongle;
+        *premier = coder->left_dongle;
+        *second = coder->right_dongle;
     }
     else
     {
-        premier = coder->right_dongle;
-        second = coder->left_dongle;
+        *premier = coder->right_dongle;
+        *second = coder->left_dongle;
     }
-    pthread_mutex_lock(&premier->lock_dongle);
-    log_status(coder->sim, coder, "has taken a dongle");
-    pthread_mutex_lock(&second->lock_dongle);
-    log_status(coder->sim, coder, "has taken a dongle");
 }
 
-void release_dongle(t_coder *coder)
+static int take_dongle(t_coder *coder)
+{    
+    t_dongle *premier;
+    t_dongle *second;
+
+    set_dongles_order(coder, &premier, &second);
+
+    pthread_mutex_lock(&premier->lock_dongle);
+    if (get_stop(coder->sim))
+    {
+        pthread_mutex_unlock(&premier->lock_dongle);
+        return (1);
+    }
+    log_status(coder->sim, coder, "has taken a dongle");
+    pthread_mutex_lock(&second->lock_dongle);
+    if (get_stop(coder->sim))
+    {
+        pthread_mutex_unlock(&second->lock_dongle);
+        pthread_mutex_unlock(&premier->lock_dongle);
+        return (1);
+    }
+    log_status(coder->sim, coder, "has taken a dongle");
+    return (0);
+}
+
+static void release_dongle(t_coder *coder)
 {
     pthread_mutex_unlock(&coder->right_dongle->lock_dongle);
     pthread_mutex_unlock(&coder->left_dongle->lock_dongle);
+}
+
+static void one_coder(t_coder *coder)
+{
+        pthread_mutex_lock(&coder->left_dongle->lock_dongle);
+        log_status(coder->sim, coder, "has taken a dongle");
+        set_start(coder);
+        while (!get_stop(coder->sim))
+            usleep(1000);
+        pthread_mutex_unlock(&coder->left_dongle->lock_dongle);
+}
+
+static int coder_cycle(t_coder *coder)
+{
+    if (take_dongle(coder) == 1)
+        return (1);
+    set_start(coder);
+    if (get_stop(coder->sim))
+    {
+        release_dongle(coder);
+        return (1);
+    }
+    log_status(coder->sim, coder, "is compiling");
+    smart_sleep(coder->sim, coder->sim->time_to_compile);
+    release_dongle(coder);
+    if (get_stop(coder->sim))
+        return (1);
+    log_status(coder->sim, coder, "is debugging");
+    smart_sleep(coder->sim, coder->sim->time_to_debug);
+    if (get_stop(coder->sim))
+        return (1);
+    log_status(coder->sim, coder, "is refactoring");
+    smart_sleep(coder->sim, coder->sim->time_to_refactor);
+    return (0);
 }
 
 void *coder_routine(void *arg)
@@ -45,17 +97,15 @@ void *coder_routine(void *arg)
     t_coder *coder;
     
     coder = (t_coder*)arg;
-    while (!get_stop(coder->sim))
+    if (coder->sim->number_of_coders == 1)
+        one_coder(coder);
+    else
     {
-        take_dongle(coder);
-        set_start(coder);
-        log_status(coder->sim, coder, "is compiling");
-        usleep(coder->sim->time_to_compile * 1000);
-        release_dongle(coder);
-        log_status(coder->sim, coder, "is debugging");
-        usleep(coder->sim->time_to_debug * 1000);
-        log_status(coder->sim, coder, "is refactoring");
-        usleep(coder->sim->time_to_refactor * 1000);
+        while (!get_stop(coder->sim))
+        {
+            if (coder_cycle(coder) == 1)
+                break;
+        }
     }
     return NULL;
 }
