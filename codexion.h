@@ -16,9 +16,24 @@
 
 typedef struct s_simulation t_simulation;
 
-typedef struct s_dongle {
+typedef struct s_dongle 
+{
     pthread_mutex_t lock_dongle;
 } t_dongle;
+
+typedef struct s_heap
+{
+    t_request *requests;
+    int size;
+    int max_capacity;
+}   t_heap;
+
+typedef struct s_request
+{
+    t_coder *coder;
+    int arrival_order;
+    long    deadline;
+}   t_request;
 
 typedef struct s_coder {
     int ID;
@@ -53,7 +68,6 @@ struct s_simulation {
     t_dongle    *dongles;
     
 };
-
 
 int parse_digit(int argc, char **argv);
 int fill_simulation(t_simulation *sim, char **argv);
