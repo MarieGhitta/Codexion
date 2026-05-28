@@ -24,6 +24,7 @@ int create_threads(t_simulation *sim)
         i++;
     }
     pthread_create(&sim->monitor_thread, NULL, monitor, sim);
+    pthread_create(&sim->scheduler_thread, NULL, scheduler_routine, sim);
     return 0;
 }
 
@@ -33,6 +34,7 @@ int join_threads(t_simulation *sim)
 
     i = 0;
     pthread_join(sim->monitor_thread, NULL);
+    pthread_join(sim->scheduler_thread, NULL);
     while(i < sim->number_of_coders)
     {
         pthread_join(sim->coders[i].coder_thread, NULL);

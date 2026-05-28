@@ -15,18 +15,14 @@
 #include <pthread.h>
 
 typedef struct s_simulation t_simulation;
+typedef struct s_coder t_coder;
 
 typedef struct s_dongle 
 {
     pthread_mutex_t lock_dongle;
+    int     is_taken;
+    long    last_release_time;
 } t_dongle;
-
-typedef struct s_heap
-{
-    t_request *requests;
-    int size;
-    int max_capacity;
-}   t_heap;
 
 typedef struct s_request
 {
@@ -35,7 +31,13 @@ typedef struct s_request
     long    deadline;
 }   t_request;
 
-typedef struct s_coder {
+typedef struct s_heap
+{
+    t_request *requests;
+    int size;
+}   t_heap;
+
+struct s_coder {
     int ID;
     int number_of_compiles_done;
     long    start_of_last_compile;
@@ -43,9 +45,12 @@ typedef struct s_coder {
     pthread_mutex_t safe_number_of_compiles_done;
     t_simulation *sim;
     pthread_t    coder_thread;
+    pthread_cond_t  wait;
+    pthread_mutex_t mut_wait;
+    int can_compile;
     t_dongle    *left_dongle;
     t_dongle    *right_dongle;
-} t_coder;
+};
 
 struct s_simulation {
     int number_of_coders;
@@ -66,7 +71,10 @@ struct s_simulation {
     int is_mut_stop_sim;
     t_coder    *coders;
     t_dongle    *dongles;
-    
+    t_heap  *request_heap;
+    pthread_mutex_t heap_mutex;
+    pthread_t scheduler_thread;
+    int arrival_counter;
 };
 
 int parse_digit(int argc, char **argv);
@@ -89,5 +97,10 @@ int take_dongle(t_coder *coder);
 void release_dongle(t_coder *coder);
 int get_compile_nbr(t_coder *coder);
 void increment_compile_nbr(t_coder *coder);
+void heapify_up(t_heap *heap, t_simulation *sim);
+void heapify_down(t_heap *heap, t_simulation *sim);
+void heap_push(t_heap *heap, t_request request, t_simulation *sim);
+t_request heap_pop(t_heap *heap, t_simulation *sim);
+void *scheduler_routine(void *arg);
 
 #endif

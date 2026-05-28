@@ -86,5 +86,6 @@ int init_simulation(t_simulation *sim)
     if (mutex_stop_sim  != 0)
         return 1;
     sim->is_mut_stop_sim = 1;
+    sim->request_heap->size = 0;
     return 0;
 }

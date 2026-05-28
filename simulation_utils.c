@@ -24,8 +24,19 @@ int get_stop(t_simulation *sim)
 
 void set_stop(t_simulation *sim)
 {
+    int i;
+    
     pthread_mutex_lock(&sim->stop_sim_mutex);
     sim->stop_sim = 1;
+    i = 0;
+    while (i < sim->number_of_coders)
+    {
+        pthread_mutex_lock(&sim->coders[i].mut_wait);
+        sim->coders[i].can_compile = 1;
+        pthread_cond_signal(&sim->coders[i].wait);
+        pthread_mutex_unlock(&sim->coders[i].mut_wait);
+        i++;
+    }
     pthread_mutex_unlock(&sim->stop_sim_mutex);
 }
 

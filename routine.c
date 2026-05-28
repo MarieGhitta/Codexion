@@ -12,6 +12,7 @@
 
 #include "codexion.h"
 #include <unistd.h>
+#include <stdio.h>
 
 static void one_coder(t_coder *coder)
 {
@@ -25,8 +26,25 @@ static void one_coder(t_coder *coder)
 
 static int coder_cycle(t_coder *coder)
 {
-    if (take_dongle(coder) == 1)
-        return (1);
+    t_request   request;
+
+    request.coder = coder;
+    request.arrival_order = coder->sim->arrival_counter;
+    coder->sim->arrival_counter += 1;
+    pthread_mutex_lock(&coder->sim->heap_mutex);
+    pthread_mutex_lock(&coder->mut_wait);
+    coder->can_compile = 0;
+    heap_push(coder->sim->request_heap, request, coder->sim);
+    pthread_mutex_unlock(&coder->sim->heap_mutex);
+    while (coder->can_compile == 0)
+    {
+        pthread_cond_wait(&coder->wait, &coder->mut_wait);
+    }
+    pthread_mutex_unlock(&coder->mut_wait);
+    pthread_mutex_lock(&coder->left_dongle->lock_dongle);
+    log_status(coder->sim, coder, "has taken a dongle");
+    pthread_mutex_lock(&coder->right_dongle->lock_dongle);
+    log_status(coder->sim, coder, "has taken a dongle");
     set_start(coder);
     if (get_stop(coder->sim))
     {

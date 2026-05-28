@@ -14,7 +14,10 @@ threads.c \
 monitor.c \
 simulation_utils.c \
 dongles.c \
-compile_utils.c
+compile_utils.c \
+heap.c \
+heap_utils.c \
+scheduler.c
 
 OBJ = $(SRC:.c=.o)
 
