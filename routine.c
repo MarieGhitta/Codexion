@@ -28,11 +28,11 @@ static int coder_cycle(t_coder *coder)
 {
     t_request   request;
 
+    pthread_mutex_lock(&coder->sim->heap_mutex);
+    pthread_mutex_lock(&coder->mut_wait);
     request.coder = coder;
     request.arrival_order = coder->sim->arrival_counter;
     coder->sim->arrival_counter += 1;
-    pthread_mutex_lock(&coder->sim->heap_mutex);
-    pthread_mutex_lock(&coder->mut_wait);
     coder->can_compile = 0;
     heap_push(coder->sim->request_heap, request, coder->sim);
     pthread_mutex_unlock(&coder->sim->heap_mutex);
@@ -41,9 +41,21 @@ static int coder_cycle(t_coder *coder)
         pthread_cond_wait(&coder->wait, &coder->mut_wait);
     }
     pthread_mutex_unlock(&coder->mut_wait);
+    if (get_stop(coder->sim))
+        return (1);
     pthread_mutex_lock(&coder->left_dongle->lock_dongle);
+    if (get_stop(coder->sim))
+    {
+        pthread_mutex_unlock(&coder->left_dongle->lock_dongle);
+        return (1);
+    }
     log_status(coder->sim, coder, "has taken a dongle");
     pthread_mutex_lock(&coder->right_dongle->lock_dongle);
+    if (get_stop(coder->sim))
+    {
+        pthread_mutex_unlock(&coder->right_dongle->lock_dongle);
+        return (1);
+    }
     log_status(coder->sim, coder, "has taken a dongle");
     set_start(coder);
     if (get_stop(coder->sim))

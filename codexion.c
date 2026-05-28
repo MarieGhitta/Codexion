@@ -77,7 +77,7 @@ int main(int argc, char **argv){
     init_simulation(sim);
     sim->time_start_simulation = get_current_time_ms();
     create_threads(sim);
-    sleep(5);
+    sleep(1);
     set_stop(sim);
     join_threads(sim);
     destroy_simulation(sim);
