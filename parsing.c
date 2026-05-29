@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include "codexion.h"
+#include <limits.h>
 
 static int is_digit(char c)
 {
@@ -61,13 +62,36 @@ int check_scheduler(char *argv)
 
 int fill_simulation(t_simulation *sim, char **argv)
 {
-    sim->number_of_coders = atoi(argv[1]);
-    sim->time_to_burnout = atoi(argv[2]);
-    sim->time_to_compile = atoi(argv[3]);
-    sim->time_to_debug = atoi(argv[4]);
-    sim->time_to_refactor = atoi(argv[5]);
-    sim->number_of_compiles_required = atoi(argv[6]);
-    sim->dongle_cooldown = atoi(argv[7]);
+    long value;
+
+    value = safe_atol(argv[1]);
+    if (value <= 0 || value > INT_MAX)
+        return (1);
+    sim->number_of_coders = (int)value;
+    value = safe_atol(argv[2]);
+    if (value <= 0)
+        return (1);
+    sim->time_to_burnout = value;
+    value = safe_atol(argv[3]);
+    if (value <= 0)
+        return (1);
+    sim->time_to_compile = value;
+    value = safe_atol(argv[4]);
+    if (value <= 0)
+        return (1);
+    sim->time_to_debug = value;
+    value = safe_atol(argv[5]);
+    if (value <= 0)
+        return (1);
+    sim->time_to_refactor = value;
+    value = safe_atol(argv[6]);
+    if (value <= 0 || value > INT_MAX)
+        return (1);
+    sim->number_of_compiles_required = (int)value;
+    value = safe_atol(argv[7]);
+    if (value < 0 || value > INT_MAX)
+        return (1);
+    sim->dongle_cooldown = (int)value;
     sim->scheduler = argv[8];
-    return 0;
+    return (0);
 }

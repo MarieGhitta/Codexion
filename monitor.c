@@ -12,6 +12,7 @@
 
 #include "codexion.h"
 #include <unistd.h>
+#include <stdio.h>
 
 static int burnout_check(t_simulation *sim, t_coder *coder)
 {
@@ -58,7 +59,7 @@ void *monitor(void *arg)
                 break ;
             i++;
         }
-        usleep(1000);
+        usleep(150);
     }
-    return NULL;
+    return (NULL);
 }

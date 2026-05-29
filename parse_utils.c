@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   logging.c                                          :+:      :+:    :+:   */
+/*   parse_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mghitta <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,19 +10,27 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include "codexion.h"
-#include <string.h>
+#include <limits.h>
 
-void log_status(t_simulation *sim, t_coder *coder, char *message)
+long safe_atol(char *str)
 {
-    pthread_mutex_lock(&sim->writing);
-    if (get_stop(sim)
-        && strcmp(message, "burned out") != 0)
+    long    nbr;
+    int     i;
+
+    nbr = 0;
+    i = 0;
+
+    if (!str || !str[0])
+        return (1);
+    while (str[i])
     {
-        pthread_mutex_unlock(&sim->writing);
-        return ;
+        if (str[i] < '0' || str[i] > '9')
+            return (-1);
+        if (nbr > (LONG_MAX - (str[i] - '0')) / 10)
+            return (-1);
+        nbr = nbr * 10 + (str[i] - '0');
+        i++;
     }
-    printf("%ld %d %s\n", get_simulation_time(sim), coder->ID, message);
-    pthread_mutex_unlock(&sim->writing);
+    return (nbr);
 }

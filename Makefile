@@ -2,7 +2,7 @@ NAME = codexion
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror -pthread
+CFLAGS = -Wall -Wextra -Werror -pthread -fsanitize=thread
 
 SRC = codexion.c \
 parsing.c \
@@ -17,7 +17,8 @@ dongles.c \
 compile_utils.c \
 heap.c \
 heap_utils.c \
-scheduler.c
+scheduler.c \
+parse_utils.c
 
 OBJ = $(SRC:.c=.o)
 

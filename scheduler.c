@@ -17,14 +17,19 @@
 static int dongle_available(t_simulation *sim, t_dongle *dongle)
 {
     long time_since_release;
+    int available;
+
+    pthread_mutex_lock(&dongle->lock_dongle);
 
     time_since_release =
         get_simulation_time(sim) - dongle->last_release_time;
-    if (dongle->is_taken)
-        return (0);
-    if (time_since_release < sim->dongle_cooldown)
-        return (0);
-    return (1);
+
+    available = (!dongle->is_taken
+        && time_since_release >= sim->dongle_cooldown);
+
+    pthread_mutex_unlock(&dongle->lock_dongle);
+
+    return (available);
 }
 
 void *scheduler_routine(void *arg)
@@ -39,6 +44,7 @@ void *scheduler_routine(void *arg)
         if (sim->request_heap->size)
         {
             request = heap_pop(sim->request_heap, sim);
+            pthread_mutex_unlock(&sim->heap_mutex);
             if (dongle_available(sim, request.coder->left_dongle)
                 && dongle_available(sim, request.coder->right_dongle))
             {           
@@ -50,10 +56,19 @@ void *scheduler_routine(void *arg)
                 pthread_mutex_unlock(&request.coder->mut_wait);
             }
             else
+            {
+                pthread_mutex_lock(&sim->heap_mutex);
                 heap_push(sim->request_heap, request, sim);
+                pthread_mutex_unlock(&sim->heap_mutex);
+
+                usleep(50);
+
+                continue;
+            }
         }
-        pthread_mutex_unlock(&sim->heap_mutex);
-        usleep(1000);
+        else
+            pthread_mutex_unlock(&sim->heap_mutex);
+        usleep(150);
     }
     return (NULL);
 }

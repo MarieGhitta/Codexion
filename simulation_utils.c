@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <unistd.h>
 
 int get_stop(t_simulation *sim)
 {
@@ -55,4 +56,16 @@ void set_start(t_coder *coder)
     pthread_mutex_lock(&coder->safe_start_of_last_compile);
     coder->start_of_last_compile = get_simulation_time(coder->sim);
     pthread_mutex_unlock(&coder->safe_start_of_last_compile);
+}
+
+void notify_compile_finished(t_coder *coder)
+{
+    pthread_mutex_lock(&coder->sim->finished_mutex);
+    coder->sim->coders_finished++;
+    if (coder->sim->coders_finished
+        >= coder->sim->number_of_coders)
+    {
+        set_stop(coder->sim);
+    }
+    pthread_mutex_unlock(&coder->sim->finished_mutex);
 }

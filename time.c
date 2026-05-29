@@ -43,7 +43,9 @@ void smart_sleep(t_simulation *sim, long time_to_wait)
     current_time = time_start;
     while(!get_stop(sim) && (current_time - time_start) <= time_to_wait)
     {
-        usleep(1000);
+        if (get_stop(sim))
+            break ;
+        usleep(150);
         current_time = get_simulation_time(sim);
     }
 }

@@ -20,7 +20,7 @@ static void one_coder(t_coder *coder)
         log_status(coder->sim, coder, "has taken a dongle");
         set_start(coder);
         while (!get_stop(coder->sim))
-            usleep(1000);
+            usleep(150);
         pthread_mutex_unlock(&coder->left_dongle->lock_dongle);
 }
 
@@ -28,14 +28,14 @@ static int coder_cycle(t_coder *coder)
 {
     t_request   request;
 
-    pthread_mutex_lock(&coder->sim->heap_mutex);
-    pthread_mutex_lock(&coder->mut_wait);
     request.coder = coder;
+    pthread_mutex_lock(&coder->sim->heap_mutex);
     request.arrival_order = coder->sim->arrival_counter;
     coder->sim->arrival_counter += 1;
-    coder->can_compile = 0;
     heap_push(coder->sim->request_heap, request, coder->sim);
     pthread_mutex_unlock(&coder->sim->heap_mutex);
+    pthread_mutex_lock(&coder->mut_wait);
+    coder->can_compile = 0;
     while (coder->can_compile == 0)
     {
         pthread_cond_wait(&coder->wait, &coder->mut_wait);
@@ -43,19 +43,9 @@ static int coder_cycle(t_coder *coder)
     pthread_mutex_unlock(&coder->mut_wait);
     if (get_stop(coder->sim))
         return (1);
-    pthread_mutex_lock(&coder->left_dongle->lock_dongle);
-    if (get_stop(coder->sim))
-    {
-        pthread_mutex_unlock(&coder->left_dongle->lock_dongle);
-        return (1);
-    }
     log_status(coder->sim, coder, "has taken a dongle");
-    pthread_mutex_lock(&coder->right_dongle->lock_dongle);
     if (get_stop(coder->sim))
-    {
-        pthread_mutex_unlock(&coder->right_dongle->lock_dongle);
-        return (1);
-    }
+    return (1);
     log_status(coder->sim, coder, "has taken a dongle");
     set_start(coder);
     if (get_stop(coder->sim))
@@ -65,8 +55,13 @@ static int coder_cycle(t_coder *coder)
     }
     log_status(coder->sim, coder, "is compiling");
     smart_sleep(coder->sim, coder->sim->time_to_compile);
-    release_dongle(coder);
     increment_compile_nbr(coder);
+    if (get_compile_nbr(coder)
+        == coder->sim->number_of_compiles_required)
+    {
+        notify_compile_finished(coder);
+    }
+    release_dongle(coder);
     if (get_stop(coder->sim))
         return (1);
     log_status(coder->sim, coder, "is debugging");

@@ -18,10 +18,14 @@ void release_dongle(t_coder *coder)
     long    now;
     
     now = get_simulation_time(coder->sim);
-    coder->right_dongle->is_taken = 0;
+    pthread_mutex_lock(&coder->left_dongle->lock_dongle);
     coder->left_dongle->is_taken = 0;
     coder->left_dongle->last_release_time = now;
+    pthread_mutex_unlock(&coder->left_dongle->lock_dongle);
+    pthread_mutex_lock(&coder->right_dongle->lock_dongle);
+    coder->right_dongle->is_taken = 0;
     coder->right_dongle->last_release_time = now;
+    pthread_mutex_unlock(&coder->right_dongle->lock_dongle);
     pthread_mutex_unlock(&coder->right_dongle->lock_dongle);
     pthread_mutex_unlock(&coder->left_dongle->lock_dongle);
 }

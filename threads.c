@@ -25,7 +25,7 @@ int create_threads(t_simulation *sim)
     }
     pthread_create(&sim->monitor_thread, NULL, monitor, sim);
     pthread_create(&sim->scheduler_thread, NULL, scheduler_routine, sim);
-    return 0;
+    return (0);
 }
 
 int join_threads(t_simulation *sim)
@@ -40,5 +40,5 @@ int join_threads(t_simulation *sim)
         pthread_join(sim->coders[i].coder_thread, NULL);
         i++;
     }
-    return 0;
+    return (0);
 }

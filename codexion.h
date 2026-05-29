@@ -28,7 +28,6 @@ typedef struct s_request
 {
     t_coder *coder;
     int arrival_order;
-    long    deadline;
 }   t_request;
 
 typedef struct s_heap
@@ -60,6 +59,8 @@ struct s_simulation {
     long time_to_refactor;
     int number_of_compiles_required;
     int dongle_cooldown;
+    int coders_finished;
+    pthread_mutex_t finished_mutex;
     int count_mutex;
     char *scheduler;
     long    time_start_simulation;
@@ -102,5 +103,8 @@ void heapify_down(t_heap *heap, t_simulation *sim);
 void heap_push(t_heap *heap, t_request request, t_simulation *sim);
 t_request heap_pop(t_heap *heap, t_simulation *sim);
 void *scheduler_routine(void *arg);
+void wait_simulation_start(t_simulation *sim);
+void notify_compile_finished(t_coder *coder);
+long safe_atol(char *str);
 
 #endif

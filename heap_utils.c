@@ -16,6 +16,15 @@
 
 static int compare_request(t_request request_a, t_request request_b, t_simulation *sim)
 {
+    long deadline_a;
+    long deadline_b;
+
+    deadline_a =
+        get_start(request_a.coder)
+        + sim->time_to_burnout;
+    deadline_b =
+        get_start(request_b.coder)
+        + sim->time_to_burnout;
     if (strcmp(sim->scheduler, "fifo") == 0)
     {
         if (request_a.arrival_order > request_b.arrival_order)
@@ -23,7 +32,7 @@ static int compare_request(t_request request_a, t_request request_b, t_simulatio
     }
     if (strcmp(sim->scheduler, "edf") == 0)
     {
-        if (request_a.deadline > request_b.deadline)
+        if (deadline_a > deadline_b)
             return (1);
     }
     return (0);
@@ -83,7 +92,7 @@ void heapify_down(t_heap *heap, t_simulation *sim)
     {
         if ((priority_child = find_priority_child(heap, sim, i)) == -1)
             break ;
-        if ((compare_request(heap->requests[priority_child], heap->requests[i], sim) == 1))
+        if ((compare_request(heap->requests[i], heap->requests[priority_child], sim) == 1))
         {       
             temp_request = heap->requests[priority_child];
             heap->requests[priority_child] =heap->requests[i];

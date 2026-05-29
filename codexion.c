@@ -27,10 +27,14 @@ void destroy_simulation(t_simulation *sim)
             pthread_mutex_destroy(&sim->writing);
         if (sim->is_mut_stop_sim)
             pthread_mutex_destroy(&sim->stop_sim_mutex);
+        pthread_mutex_destroy(&sim->heap_mutex);
+        pthread_mutex_destroy(&sim->finished_mutex);
         while (i < sim->count_mutex)
         {
             pthread_mutex_destroy(&sim->dongles[i].lock_dongle);
             pthread_mutex_destroy(&sim->coders[i].safe_start_of_last_compile);
+            pthread_mutex_destroy(
+                &sim->coders[i].safe_number_of_compiles_done);
             pthread_mutex_destroy(&sim->coders[i].mut_wait);
             pthread_cond_destroy(&sim->coders[i].wait);
             i++;
@@ -43,7 +47,6 @@ void destroy_simulation(t_simulation *sim)
         {
             if (sim->request_heap->requests)
                 free(sim->request_heap->requests);
-
             free(sim->request_heap);
         }
     }
@@ -65,6 +68,12 @@ int main(int argc, char **argv){
         return 1;
     memset(sim, 0, sizeof(t_simulation));
     fill_simulation(sim, argv);
+    if (fill_simulation(sim, argv))
+    {
+        printf("Error\n");
+        free(sim);
+        return (1);
+    }
     sim->request_heap = malloc(sizeof(t_heap));
     if (!sim->request_heap)
         return (1);
@@ -77,8 +86,6 @@ int main(int argc, char **argv){
     init_simulation(sim);
     sim->time_start_simulation = get_current_time_ms();
     create_threads(sim);
-    sleep(1);
-    set_stop(sim);
     join_threads(sim);
     destroy_simulation(sim);
     return 0;
