@@ -106,5 +106,6 @@ void *scheduler_routine(void *arg);
 void wait_simulation_start(t_simulation *sim);
 void notify_compile_finished(t_coder *coder);
 long safe_atol(char *str);
+int coder_cycle(t_coder *coder);
 
 #endif

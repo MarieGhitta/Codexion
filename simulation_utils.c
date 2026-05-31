@@ -43,7 +43,7 @@ void set_stop(t_simulation *sim)
 
 long get_start(t_coder *coder)
 {
-    int value_start;
+    long value_start;
 
     pthread_mutex_lock(&coder->safe_start_of_last_compile);
     value_start = coder->start_of_last_compile;

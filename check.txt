@@ -1,3 +1,0 @@
-- comment gérer overflow ? 
-- int/long dans struct ?
-- début à +- 50 ms ?

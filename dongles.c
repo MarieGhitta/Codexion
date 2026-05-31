@@ -26,6 +26,4 @@ void release_dongle(t_coder *coder)
     coder->right_dongle->is_taken = 0;
     coder->right_dongle->last_release_time = now;
     pthread_mutex_unlock(&coder->right_dongle->lock_dongle);
-    pthread_mutex_unlock(&coder->right_dongle->lock_dongle);
-    pthread_mutex_unlock(&coder->left_dongle->lock_dongle);
 }

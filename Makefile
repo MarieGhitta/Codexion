@@ -18,7 +18,8 @@ compile_utils.c \
 heap.c \
 heap_utils.c \
 scheduler.c \
-parse_utils.c
+parse_utils.c \
+coder.c
 
 OBJ = $(SRC:.c=.o)
 

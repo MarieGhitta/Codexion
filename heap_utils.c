@@ -32,8 +32,9 @@ static int compare_request(t_request request_a, t_request request_b, t_simulatio
     }
     if (strcmp(sim->scheduler, "edf") == 0)
     {
-        if (deadline_a > deadline_b)
-            return (1);
+        if (deadline_a == deadline_b)
+            return (
+                request_a.arrival_order > request_b.arrival_order);
     }
     return (0);
 }
