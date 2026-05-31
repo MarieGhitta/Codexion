@@ -40,14 +40,14 @@ struct s_coder
 {
 	int				ID;
 	int				number_of_compiles_done;
+	pthread_mutex_t	safe_number_of_compiles_done;
 	long			start_of_last_compile;
 	pthread_mutex_t	safe_start_of_last_compile;
-	pthread_mutex_t	safe_number_of_compiles_done;
-	t_simulation	*sim;
 	pthread_t		coder_thread;
 	pthread_cond_t	wait;
 	pthread_mutex_t	mut_wait;
 	int				can_compile;
+	t_simulation	*sim;
 	t_dongle		*left_dongle;
 	t_dongle		*right_dongle;
 };
@@ -62,22 +62,24 @@ struct s_simulation
 	int				number_of_compiles_required;
 	int				dongle_cooldown;
 	int				coders_finished;
-	pthread_mutex_t	finished_mutex;
 	int				count_mutex;
 	char			*scheduler;
 	long			time_start_simulation;
+	int				arrival_counter;
 	pthread_mutex_t	writing;
-	pthread_mutex_t	stop_sim_mutex;
-	pthread_t		monitor_thread;
 	int				is_mut_writing;
 	int				stop_sim;
+	pthread_mutex_t	stop_sim_mutex;
 	int				is_mut_stop_sim;
+	pthread_t		monitor_thread;
+	pthread_t		scheduler_thread;
+	pthread_mutex_t	finished_mutex;
+	int				is_mut_finished;
+	pthread_mutex_t	heap_mutex;
+	int				is_mut_heap;
 	t_coder			*coders;
 	t_dongle		*dongles;
 	t_heap			*request_heap;
-	pthread_mutex_t	heap_mutex;
-	pthread_t		scheduler_thread;
-	int				arrival_counter;
 };
 
 int			parse_digit(int argc, char **argv);

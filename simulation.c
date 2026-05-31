@@ -97,12 +97,12 @@ int	init_simulation(t_simulation *sim)
 	sim->is_mut_writing = 1;
 	if (pthread_mutex_init(&sim->stop_sim_mutex, NULL) != 0)
 		return (1);
-	sim->coders_finished = 1;
+	sim->is_mut_stop_sim = 1;
 	if (pthread_mutex_init(&sim->finished_mutex, NULL) != 0)
 		return (1);
+	sim->is_mut_finished = 1;
 	if (pthread_mutex_init(&sim->heap_mutex, NULL) != 0)
 		return (1);
-	sim->is_mut_stop_sim = 1;
-	sim->request_heap->size = 0;
+	sim->is_mut_heap = 1;
 	return (0);
 }

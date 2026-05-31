@@ -41,8 +41,10 @@ void	destroy_simulation(t_simulation *sim)
 			pthread_mutex_destroy(&sim->writing);
 		if (sim->is_mut_stop_sim)
 			pthread_mutex_destroy(&sim->stop_sim_mutex);
-		pthread_mutex_destroy(&sim->heap_mutex);
-		pthread_mutex_destroy(&sim->finished_mutex);
+		if (sim->is_mut_heap)
+			pthread_mutex_destroy(&sim->heap_mutex);
+		if (sim->is_mut_finished)
+			pthread_mutex_destroy(&sim->finished_mutex);
 		destroy_mutex_coders(sim);
 		if (sim->dongles)
 			free(sim->dongles);
@@ -63,6 +65,7 @@ static int	init_heap(t_simulation *sim)
 	sim->request_heap = malloc(sizeof(t_heap));
 	if (!sim->request_heap)
 		return (1);
+	sim->request_heap->size = 0;
 	sim->request_heap->requests
 		= malloc(sim->number_of_coders * sizeof(t_request));
 	if (!sim->request_heap->requests)
